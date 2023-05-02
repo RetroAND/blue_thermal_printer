@@ -25,6 +25,7 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -879,20 +880,14 @@ public class BlueThermalPrinterPlugin implements FlutterPlugin, ActivityAware,Me
     }
   }
 
-  private void printImageBytes(Result result, byte[] bytes) {
+  private void printRasterImage(Result result, byte[] bytes, int width, int height) {
     if (THREAD == null) {
       result.error("write_error", "not connected", null);
       return;
     }
     try {
-      Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-      if (bmp != null) {
-        byte[] command = Utils.decodeBitmap(bmp);
-        THREAD.write(PrinterCommands.ESC_ALIGN_CENTER);
-        THREAD.write(command);
-      } else {
-        Log.e("Print Photo error", "the file doesn't exist");
-      }
+      byte[] writeRasterCommand = {PrinterCommands.GS, 0x76, 0x30, width & 0xff, width >> 8, height & 0xff, height >> 8};
+      THREAD.write(Bytes.concat());
       result.success(true);
     } catch (Exception ex) {
       Log.e(TAG, ex.getMessage(), ex);

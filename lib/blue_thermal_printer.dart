@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:typed_data';
+import 'dart:ui';
 
+import 'package:blue_thermal_printer/image_manipulator.dart';
 import 'package:flutter/services.dart';
 
 class BlueThermalPrinter {
@@ -121,6 +123,16 @@ class BlueThermalPrinter {
   ///printImageBytes(Uint8List bytes)
   Future<dynamic> printImageBytes(Uint8List bytes) =>
       _channel.invokeMethod('printImageBytes', {'bytes': bytes});
+
+  Future<dynamic> printRasterImage(Image image) async {
+    final ImageManipulator manipulator =
+        ImageManipulator(await ImageManipulator.LoadImage(image));
+    _channel.invokeMethod('printRasterImage', {
+      'bytes': await manipulator.processImageToPrint(),
+      'width': image.width,
+      'height': image.height
+    });
+  }
 
   ///printQRcode(String textToQR, int width, int height, int align)
   Future<dynamic> printQRcode(
