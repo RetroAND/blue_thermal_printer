@@ -983,12 +983,13 @@ public class BlueThermalPrinterPlugin implements FlutterPlugin, ActivityAware,Me
     {
       byte[] model = PrinterCommands.BIXOLON_QR_MODEL_2;
       byte[] setSizeCommand = PrinterCommands.BIXOLON_QR_DOT_SIZE;
-      byte[] size = {(byte)(width & 0xFF)};
+      byte[] size = {0x04};
       byte[] correction = PrinterCommands.BIXOLON_QR_ERROR_CORRECTION_LEVEL_L;
       byte[] data = textToQR.getBytes();
       byte[] storeData = PrinterCommands.BIXOLON_QR_SAVE_STORAGE;
-      storeData[3] = (byte)(textToQR.length() & 0xFF);
-      storeData[4] = (byte)((textToQR.length() >> 8) & 0xFF);
+      int length = textToQR.length() +3;
+      storeData[3] = (byte)(length & 0xFF);
+      storeData[4] = (byte)((length >> 8) & 0xFF);
       byte[] print = PrinterCommands.BIXOLON_QR_ENCODE_PRINT;
 
       ByteArrayOutputStream compilation = new ByteArrayOutputStream(model.length + setSizeCommand.length + size.length + correction.length + data.length + storeData.length + print.length);
